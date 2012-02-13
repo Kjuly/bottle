@@ -543,7 +543,7 @@ class Bottle(object):
         self.install(self.hooks)
         if autojson: self.install(JSONPlugin())
         #: The installed :class:`TemplatePlugin`.
-        self.templates = self.install(TemplatePlugin())
+        self.views = self.install(TemplatePlugin())
 
     def mount(self, prefix, app, **options):
         ''' Mount an application (:class:`Bottle` or plain WSGI) to a specific
@@ -753,12 +753,12 @@ class Bottle(object):
 
     def _handle(self, environ):
         try:
-            route, args = self.router.match(environ)
-            environ['route.handle'] = environ['bottle.route'] = route
-            environ['route.url_args'] = args
             environ['bottle.app'] = self
             request.bind(environ)
             response.bind()
+            route, args = self.router.match(environ)
+            environ['route.handle'] = environ['bottle.route'] = route
+            environ['route.url_args'] = args
             return route.call(**args)
         except HTTPResponse:
             return _e()
